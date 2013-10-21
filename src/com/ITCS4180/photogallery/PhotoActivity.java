@@ -1,9 +1,20 @@
+/* 	Assignment: Homework 5
+ * 
+ * 	File: 		PhotoActivity.java
+ * 
+ * 	Names: 		Christopher Moseley
+ * 				Caril Carrillo
+ *   			Farida Bestowros
+ */
+
 package com.ITCS4180.photogallery;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.net.URLConnection;
+import java.util.Arrays;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -49,28 +60,18 @@ public class PhotoActivity extends Activity {
 
 		// Get the message from the intent
 		Intent intent = getIntent();
-		Log.i("demo", "Getting intent string");
 		message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-		Log.i("demo", "Getting intent data");
-		ArrayList<Parcelable> imageParcel = (ArrayList<Parcelable>) intent.getParcelableArrayListExtra(MainActivity.EXTRA_IMAGEDATA);
-		Log.i("demo", Integer.toString(imageParcel.size()));
-		imageData = new ImageData[imageParcel.size()];
-		for(int i=0; i < imageParcel.size(); i++){
-			imageData[i] = (ImageData) imageParcel.get(i);
-		}
+		Parcelable[] imageParcel = intent.getParcelableArrayExtra(MainActivity.EXTRA_IMAGEDATA);
 		
+		imageData = Arrays.copyOf(imageParcel, imageParcel.length, ImageData[].class);
+		//imageData = new ImageData[imageParcel.length];
+		//for(int i=0; i < imageParcel.length; i++){
+		//	imageData[i] = (ImageData) imageParcel[i];
+		//}
 		
 		Log.i("demo", imageData[0].getTitle());
-		/**imageUrlArray = new String[imageParcel.size()];
-		
-		for(int i=0; i < imageParcel.size(); i++){
-			Log.i("demo", imageData[0].getUrl());
-			imageUrlArray[i] = imageData[i].getUrl();
-		}
-		**/
 		if (message.equals("Photos")) {
 			new photoGet().execute();
-			Log.e("FanHitting", "This worked.");
 			ImageView imageObj = (ImageView) findViewById(R.id.imageView1);
 			imageObj.setOnTouchListener(new OnTouchListener() {
 				@Override
@@ -136,11 +137,6 @@ public class PhotoActivity extends Activity {
 
 		@Override
 		protected Bitmap doInBackground(Void... params) {
-			/*
-			 * if (message.equals("Slide Show")) { try { Thread.sleep(2000); }
-			 * catch (InterruptedException e) { // TODO Auto-generated catch
-			 * block e.printStackTrace(); } }
-			 */
 
 			URL url = null;
 			Bitmap bmp = null;
@@ -149,12 +145,19 @@ public class PhotoActivity extends Activity {
 			} catch (MalformedURLException e) {
 				Log.e("FanHitting", "Bad Url in image array, or bad parsing");
 			}
+			InputStream inputStream = null;
+			URLConnection conn = null;
 			try {
-				bmp = BitmapFactory.decodeStream(url.openConnection()
-						.getInputStream());
+				conn = url.openConnection();
 			} catch (IOException e) {
-				Log.e("FanHitting", "imageParser blew up");
+				Log.e("demo", "PhotoActivity.conn: issue! (Connection Failure?)");
 			}
+			try {
+				inputStream = conn.getInputStream();
+			} catch (IOException e1) {
+				Log.e("demo", "PhotoActivity.inputstream: issue!");
+			}
+			bmp = BitmapFactory.decodeStream(inputStream);
 			if(bmp.getHeight() > bmp.getWidth()){
 				Matrix matrix = new Matrix();
 		        matrix.postRotate(270);
@@ -174,8 +177,6 @@ public class PhotoActivity extends Activity {
 			displayImg.setImageBitmap(result);
 			TextView titleText = (TextView) findViewById(R.id.titleTV);
 			TextView viewText = (TextView) findViewById(R.id.viewTV);
-			Log.i("PA", imageData[currentImage].getTitle() );
-			Log.i("PA", Integer.toString(imageData[currentImage].getViews()));
 			titleText.setText(imageData[currentImage].getTitle());
 			viewText.setText("Views: " + Integer.toString(imageData[currentImage].getViews()));
 			if (message.equals("Photos")) {

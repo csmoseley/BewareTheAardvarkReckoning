@@ -1,3 +1,13 @@
+/* 	Assignment: Homework 5
+ * 
+ * 	File: 		MainActivity.java
+ * 
+ * 	Names: 		Christopher Moseley
+ * 				Caril Carrillo
+ *   			Farida Bestowros
+ */
+
+
 package com.ITCS4180.photogallery;
 
 import java.io.BufferedReader;
@@ -7,7 +17,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,6 +27,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,11 +37,12 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	public final static String EXTRA_MESSAGE = "com.ITCS4180.photogallery.MESSAGE";
 	public final static String EXTRA_IMAGEDATA = "com.ITCS4180.photogallery.IMAGEDATA";
-	ArrayList<ImageData> photosList = new ArrayList<ImageData>();
+	ImageData[] photosList = new ImageData[100];
 	Parcel photosParcel;
 	static int viewSize = 0;
 	ProgressDialog progressDialog;
@@ -77,24 +88,32 @@ public class MainActivity extends Activity {
 						"http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=420cd85af2900ce8637ef0f5ff42496a&tags=UNCC&extras=views%2Curl_m&per_page=100&format=rest");
 				HttpURLConnection con = (HttpURLConnection) url.openConnection();
 				con.setRequestMethod("GET");
+				
 				con.connect();
 				int statusCode = con.getResponseCode();
+				Log.e("demo", con.getResponseMessage());
 				if (statusCode == HttpURLConnection.HTTP_OK) {
 					InputStream in = con.getInputStream();
 					photosList = parseXML(in);
 					for(int i=0;i<(viewSize); i++){
-						Log.i("urls","Title#" + Integer.toString(i) +": "+ photosList.get(i).getTitle());
-						Log.i("urls","URL#" + Integer.toString(i) +": "+ photosList.get(i).getUrl());
-						Log.i("urls","views#" + Integer.toString(i) +": "+ photosList.get(i).getViews());
+						Log.i("urls","Title#" + Integer.toString(i) +": "+ photosList[i].getTitle());
+						Log.i("urls","URL#" + Integer.toString(i) +": "+ photosList[i].getUrl());
+						Log.i("urls","views#" + Integer.toString(i) +": "+ photosList[i].getViews());
 					}
+				}else{
+					Log.e("demo", "Bad Connection:"+ con.getResponseMessage());
 				}
 			} catch (MalformedURLException e) {
+				Log.e("demo", "Bad Connection1");
 				e.printStackTrace();
 			} catch (IOException e) {
+				Log.e("demo", "Bad Connection2");
 				e.printStackTrace();
 			} catch (NumberFormatException e) {
+				Log.e("demo", "Bad Connection3");
 				e.printStackTrace();
 			} catch (XmlPullParserException e) {
+				Log.e("demo", "Bad Connection4");
 				e.printStackTrace();
 			}
 			return null;
@@ -110,17 +129,21 @@ public class MainActivity extends Activity {
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
 			Log.i("demo", "done2");
-			intent.putParcelableArrayListExtra(EXTRA_IMAGEDATA, photosList);
+			if(photosList[0] == null){
+				Toast.makeText(getApplicationContext(), "Connection Failure - Try Again", Toast.LENGTH_SHORT).show();
+			}else{
+			intent.putExtra(EXTRA_IMAGEDATA, photosList);
 			Log.i("demo", "done3");
 			startActivity(intent);
+			}
 			progressDialog.dismiss();
 		}
 		
 	}
-	static ArrayList<ImageData> parseXML(InputStream xmlIn) throws XmlPullParserException, NumberFormatException, IOException{						
+	static ImageData[] parseXML(InputStream xmlIn) throws XmlPullParserException, NumberFormatException, IOException{						
 		XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
 		parser.setInput(xmlIn, "UTF-8");
-		ArrayList<ImageData> photoData = new ArrayList<ImageData>();
+		ImageData[] photoData = new ImageData[100];
 		
 		int count = 0;
 		int event = parser.getEventType();
@@ -131,11 +154,11 @@ public class MainActivity extends Activity {
 				break;
 			case XmlPullParser.START_TAG:
 				if(parser.getName().equals("photo")){
-					photoData.add(new ImageData(
+					photoData[count] = new ImageData(
 							parser.getAttributeValue(null, "title").trim(),
 							parser.getAttributeValue(null, "url_m").trim(),
 							Integer.parseInt(parser.getAttributeValue(null, "views"))
-							));
+							);
 				}
 				break;
 			case XmlPullParser.END_TAG:
@@ -198,29 +221,33 @@ public class MainActivity extends Activity {
 		}
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
-			Log.i("demo",Integer.toString(photosList.size()));
-			intent.putParcelableArrayListExtra(EXTRA_IMAGEDATA, photosList);
-			startActivity(intent);
-			Log.i("demo", "done1");
+			if(photosList[0] == null){
+				Toast.makeText(getApplicationContext(), "Connection Failure - Try Again", Toast.LENGTH_SHORT).show();
+			}else{
+				Log.i("demo",Integer.toString(photosList.length));
+				intent.putExtra(EXTRA_IMAGEDATA, photosList);
+				startActivity(intent);
+				Log.i("demo", "done1");
+			}
 			progressDialog.dismiss();
 		}
 		
 	}
-	static ArrayList<ImageData> parseJSON(String jsonString) throws IOException, JSONException{						
+	static ImageData[] parseJSON(String jsonString) throws IOException, JSONException{						
 		Log.i("demo", "done1");
 		JSONArray imageJSONArray = new JSONArray(jsonString);
 		Log.i("demo", "done3");
 		int count = 0;
-		ArrayList<ImageData> photoData = new ArrayList<ImageData>();
+		ImageData[] photoData = new ImageData[100];
 		Log.i("demo", "done4");
 		for(int i=0; i<imageJSONArray.length(); i++){
 			JSONObject imageJSONObject = imageJSONArray.getJSONObject(i);
 			System.out.println(imageJSONObject.getString("title"));
-			photoData.add(new ImageData(
+			photoData[i] = new ImageData(
 					imageJSONObject.getString("title"),
 					imageJSONObject.getString("url_m"),
 					imageJSONObject.getInt("views")
-					));
+					);
 			count++;
 		}
 		viewSize = count;

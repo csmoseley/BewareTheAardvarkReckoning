@@ -1,3 +1,11 @@
+/* 	Assignment: Homework 5
+ * 
+ * 	File: 		ImageData.java
+ * 
+ * 	Names: 		Christopher Moseley
+ * 				Caril Carrillo
+ *   			Farida Bestowros
+ */
 package com.ITCS4180.photogallery;
 
 import android.os.Parcel;
