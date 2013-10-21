@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">UNCC Photos</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_photo">Photos Activity</string>
+    <string name="xml">XML</string>
+    <string name="json">JSON</string>
+    <string name="logoDescriptor">UNC Charlotte Logo</string>
+    <string name="photosBtn">Photos</string>
+    <string name="slideshowBtn">Slide Show</string>
+    <string name="titlePH">Title Placeholder</string>
+    <string name="viewPH">Views Placeholder</string>
+
+</resources>
