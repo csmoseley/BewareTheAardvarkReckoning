@@ -26,8 +26,9 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -37,7 +38,6 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	public final static String EXTRA_MESSAGE = "com.ITCS4180.photogallery.MESSAGE";
@@ -45,6 +45,7 @@ public class MainActivity extends Activity {
 	ImageData[] photosList = new ImageData[100];
 	Parcel photosParcel;
 	static int viewSize = 0;
+	int lastButton = R.id.slideshowBtn;
 	ProgressDialog progressDialog;
 	Intent intent;
 
@@ -52,13 +53,13 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
 	}
 
 	public void launchGallery(View v) {
 		// Perform action on click
 		intent = new Intent(this, PhotoActivity.class);
 		Button photosBtnObj = (Button) findViewById(v.getId());
+		lastButton = v.getId();
 		String message = photosBtnObj.getText().toString();
 		intent.putExtra(EXTRA_MESSAGE, message);
 		RadioGroup rg = (RadioGroup) findViewById(R.id.radioGroup1);
@@ -130,7 +131,7 @@ public class MainActivity extends Activity {
 			super.onPostExecute(result);
 			Log.i("demo", "done2");
 			if(photosList[0] == null){
-				Toast.makeText(getApplicationContext(), "Connection Failure - Try Again", Toast.LENGTH_SHORT).show();
+				connectionDialog();
 			}else{
 			intent.putExtra(EXTRA_IMAGEDATA, photosList);
 			Log.i("demo", "done3");
@@ -222,7 +223,7 @@ public class MainActivity extends Activity {
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
 			if(photosList[0] == null){
-				Toast.makeText(getApplicationContext(), "Connection Failure - Try Again", Toast.LENGTH_SHORT).show();
+				connectionDialog();
 			}else{
 				Log.i("demo",Integer.toString(photosList.length));
 				intent.putExtra(EXTRA_IMAGEDATA, photosList);
@@ -255,4 +256,28 @@ public class MainActivity extends Activity {
 		return photoData;
 	}
 	
+	
+	public void connectionDialog(){	
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		// Add the buttons
+		builder.setPositiveButton(R.string.Retry, new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		               // User clicked OK button
+		        	   launchGallery(findViewById(lastButton));
+		        	   dialog.dismiss();
+		           }
+		       });
+		builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		               // User cancelled the dialog
+		        	   
+		        	   dialog.dismiss();
+		           }
+		       });
+		builder.setTitle("Network Error");
+		builder.setMessage("Are you connected?");
+		// Create the AlertDialog
+		AlertDialog dialog = builder.create();
+		dialog.show();
+	}
 }

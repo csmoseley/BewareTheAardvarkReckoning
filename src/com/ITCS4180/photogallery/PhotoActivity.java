@@ -46,6 +46,7 @@ public class PhotoActivity extends Activity {
 	boolean notfinished = true;
 	CountDownTimer cdt;
 	String[] imageUrlArray = null;
+	boolean error = false;
 	ImageData[] imageData = null;
 	Bitmap bmp = null;
 
@@ -151,13 +152,19 @@ public class PhotoActivity extends Activity {
 				conn = url.openConnection();
 			} catch (IOException e) {
 				Log.e("demo", "PhotoActivity.conn: issue! (Connection Failure?)");
+				error = true; 
 			}
 			try {
 				inputStream = conn.getInputStream();
 			} catch (IOException e1) {
 				Log.e("demo", "PhotoActivity.inputstream: issue!");
+				error = true; 
 			}
-			bmp = BitmapFactory.decodeStream(inputStream);
+			Log.e("demo", Boolean.toString(error));
+			if(error){
+			}else{
+				bmp = BitmapFactory.decodeStream(inputStream);
+			
 			if(bmp.getHeight() > bmp.getWidth()){
 				Matrix matrix = new Matrix();
 		        matrix.postRotate(270);
@@ -165,8 +172,8 @@ public class PhotoActivity extends Activity {
 			}
 	        
 	        
-	        
-	        
+			Log.i("demo", "returning a bmp");
+			}
 			return bmp;
 		}
 
@@ -174,6 +181,9 @@ public class PhotoActivity extends Activity {
 		protected void onPostExecute(Bitmap result) {
 			super.onPostExecute(result);
 			ImageView displayImg = (ImageView) findViewById(R.id.imageView1);
+			if(error == true){
+				finish();
+			}
 			displayImg.setImageBitmap(result);
 			TextView titleText = (TextView) findViewById(R.id.titleTV);
 			TextView viewText = (TextView) findViewById(R.id.viewTV);
@@ -192,7 +202,7 @@ public class PhotoActivity extends Activity {
 					public void run(){
 						new photoGet().execute();
 					}
-				}, 500);
+				}, 2000);
 			}
 
 		}

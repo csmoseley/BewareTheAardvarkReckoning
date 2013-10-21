@@ -12,6 +12,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:adjustViewBounds="true"
+        android:contentDescription="@string/pictureDescriptor"
         android:scaleType="fitCenter"
         android:src="@drawable/background_logo" />
 
@@ -31,7 +32,6 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
-        android:text="@string/viewPH"
-         />
+        android:text="@string/viewPH" />
 
 </RelativeLayout>

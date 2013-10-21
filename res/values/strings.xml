@@ -8,9 +8,13 @@
     <string name="xml">XML</string>
     <string name="json">JSON</string>
     <string name="logoDescriptor">UNC Charlotte Logo</string>
+    <string name="pictureDescriptor">UNC Charlotte Logo</string>
     <string name="photosBtn">Photos</string>
     <string name="slideshowBtn">Slide Show</string>
     <string name="titlePH">Title Placeholder</string>
     <string name="viewPH">Views Placeholder</string>
+    <string name="NetworkError">Network Error</string>
+    <string name="Retry">Retry</string>
+    <string name="Cancel">Cancel</string>
 
 </resources>
