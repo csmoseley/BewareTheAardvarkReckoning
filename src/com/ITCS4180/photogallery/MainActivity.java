@@ -86,7 +86,7 @@ public class MainActivity extends Activity {
 		protected Void doInBackground(Void... params) {
 			try {
 				URL url = new URL(
-						"http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=420cd85af2900ce8637ef0f5ff42496a&tags=UNCC&extras=views%2Curl_m&per_page=100&format=rest");
+						"http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=f835f3e6b5c8e05fa2e7d1501e9103b8&tags=UNCC&extras=views%2Curl_m&per_page=100&format=rest");
 				HttpURLConnection con = (HttpURLConnection) url.openConnection();
 				con.setRequestMethod("GET");
 				
@@ -180,7 +180,7 @@ public class MainActivity extends Activity {
 		@Override
 		protected Void doInBackground(Void... params) {
 			try {
-				URL url = new URL("http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=420cd85af2900ce8637ef0f5ff42496a&tags=UNCC&extras=views%2Curl_m&per_page=100&format=json&nojsoncallback=1");
+				URL url = new URL("http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=f835f3e6b5c8e05fa2e7d1501e9103b8&tags=UNCC&extras=views%2Curl_m&per_page=100&format=json&nojsoncallback=1");
 				HttpURLConnection con = (HttpURLConnection) url
 						.openConnection();
 				con.setRequestMethod("GET");
